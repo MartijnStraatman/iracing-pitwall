@@ -1,0 +1,85 @@
+version: '3.8'
+
+services:
+  influxdb3:
+    image: influxdb:3.2.1-core # Or the latest stable 3.x tag like influxdb:3.1.0-alpine
+    container_name: influxdb3_core
+    ports:
+      - "8181:8181" # Default HTTP port for InfluxDB 3 Core
+    environment:
+      # --- InfluxDB 3 Core Configuration ---
+      - INFLUXDB_IOX_NODE_ID=node1
+      - INFLUXDB_IOX_OBJECT_STORE=s3
+      - INFLUXDB_IOX_MINIO_ENDPOINT=http://minio:9000
+      - INFLUXDB_IOX_MINIO_ACCESS_KEY=minioadmin
+      - INFLUXDB_IOX_MINIO_SECRET_KEY=minioadmin
+      - INFLUXDB_IOX_MINIO_BUCKET=influxdb3-data
+      # Optional: Configure longer garbage collection for data in object storage
+      # For testing, you might set it to '30d' for 30 days, or '90d' for 90 days.
+      # Be cautious with very long periods without managing underlying storage capacity.
+      - INFLUXDB_IOX_GC_OBJECTSTORE_CUTOFF=90d
+      - INFLUXDB_IOX_GC_PARQUETFILE_CUTOFF=90d
+    command:
+      # Explicitly define the full command with all expected parameters.
+      # We now use '--object-store file' and '--data-dir' for local persistence.
+      - "influxdb3"
+      - "serve"
+      - "--object-store"
+      - "file" # CHANGED: Use 'file' for local filesystem storage
+      - "--data-dir" # REQUIRED for '--object-store file'
+      - "/var/lib/influxdb3/data" # Path inside the container where data will be stored
+      - "--node-id"
+      - "${INFLUXDB_IOX_NODE_ID}"
+      - "--log-filter"
+      - "${INFLUXDB_IOX_LOG_FILTER:-info}"
+    volumes:
+      # Volume for InfluxDB 3's internal data (WAL, cache, etc.)
+      - influxdb3_data:/var/lib/influxdb3
+    depends_on:
+      - minio # Ensure MinIO starts before InfluxDB 3
+    networks:
+      - monitoring_network
+
+  minio:
+    image: minio/minio:latest
+    container_name: minio_server
+    ports:
+      - "9000:9000" # MinIO API port
+      - "9001:9001" # MinIO Console port (for browsing buckets)
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    command: server /data --console-address ":9001"
+    volumes:
+      - minio_data:/data # Persistent storage for MinIO data
+    networks:
+      - monitoring_network
+
+  grafana:
+    image: grafana/grafana:latest # Use the latest Grafana image
+    container_name: grafana_server
+    ports:
+      - "3000:3000" # Default Grafana web UI port
+    environment:
+      # Optional: Set default admin user and password (change for production!)
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      # Optional: Auto-provision data source (more advanced, but useful for quick start)
+      # You would create a grafana/provisioning/datasources/influxdb.yml file
+      # - GF_PATHS_PROVISIONING=/etc/grafana/provisioning
+    volumes:
+      - grafana_data:/var/lib/grafana # Persistent storage for Grafana data (dashboards, configs)
+    depends_on:
+      - influxdb3 # Ensure InfluxDB 3 is running before Grafana
+    networks:
+      - monitoring_network
+    restart: unless-stopped # Automatically restart if it stops
+
+volumes:
+  influxdb3_data:
+  minio_data:
+  grafana_data:
+
+networks:
+  monitoring_network:
+    driver: bridge
