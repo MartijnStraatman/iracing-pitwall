@@ -1,4 +1,4 @@
-iracing_telemetry_data = {
+telemetry_data = {
     "AirDensity": {"description": "Density of air at start/finish line", "unit": "kg/m^3"},
     "AirPressure": {"description": "Pressure of air at start/finish line", "unit": "Pa"},
     "AirTemp": {"description": "Temperature of air at start/finish line", "unit": "C"},
