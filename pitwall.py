@@ -10,8 +10,8 @@ from influxdb_client_3 import WriteOptions, write_client_options, InfluxDBError
 
 
 INFLUXDB_HOST = "http://localhost:8181"
-INFLUXDB_DATABASE = "my_telemetry_db"
-INFLUXDB_TOKEN = "" # No token needed if authentication is disabled (default for Core)
+INFLUXDB_DATABASE = "iracing-telemetry"
+INFLUXDB_TOKEN = "apiv3_fMQ4YUfXm2twQxfztaMvGrrrHtivTq8hm6ORkUpyhJmkSaewPpd450p417nmA9sYKaZn4cuaDzV3NXjazCWjRA" # just for testing
 
 class BatchingCallback:
     """
