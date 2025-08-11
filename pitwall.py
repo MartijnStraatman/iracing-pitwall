@@ -9,7 +9,7 @@ from influxdb_client_3 import InfluxDBClient3, Point, WritePrecision
 from influxdb_client_3 import WriteOptions, write_client_options, InfluxDBError
 
 
-INFLUXDB_HOST = "http://localhost:8181"
+INFLUXDB_HOST = "http://192.168.0.7:8181" # some local ip
 INFLUXDB_DATABASE = "iracing-telemetry"
 INFLUXDB_TOKEN = "apiv3_fMQ4YUfXm2twQxfztaMvGrrrHtivTq8hm6ORkUpyhJmkSaewPpd450p417nmA9sYKaZn4cuaDzV3NXjazCWjRA" # just for testing
 
