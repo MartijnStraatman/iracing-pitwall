@@ -145,5 +145,6 @@ if __name__ == '__main__':
                         print(e)
                 time.sleep(1)
         except KeyboardInterrupt:
+            client.close()
+            client.disconnect()
             # press ctrl+c to exit
-            pass
