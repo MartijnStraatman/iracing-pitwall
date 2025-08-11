@@ -108,7 +108,9 @@ def generate_telemetry_point(driver_name, telemetry_item) -> Point:
         .field("RFtempCM", float(telemetry_item["RFtempCM"])) \
         .field("LFtempCM", float(telemetry_item["LFtempCM"])) \
         .field("LRtempCM", float(telemetry_item["LRtempCM"])) \
-        .field("LapLastLapTime", int(telemetry_item["LapLastLapTime"]))\
+        .field("LapLastLapTime", int(telemetry_item["LapLastLapTime"])) \
+        .field("IsInGarage", bool(telemetry_item["IsInGarage"])) \
+        .field("OnPitRoad", bool(telemetry_item["OnPitRoad"])) \
         .time(datetime.now(timezone.utc), write_precision=WritePrecision.NS)
 
 
