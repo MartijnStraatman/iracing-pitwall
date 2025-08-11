@@ -1,3 +1,5 @@
+import sys
+
 import irsdk
 
 import time
@@ -147,4 +149,5 @@ if __name__ == '__main__':
         except KeyboardInterrupt:
             client.close()
             client.disconnect()
+            sys.exit(0)
             # press ctrl+c to exit
