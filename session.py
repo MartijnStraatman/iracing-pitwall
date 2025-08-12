@@ -17,7 +17,10 @@ class Session(object):
         self._update_session_info()
 
     def _update_session_info(self):
-        session_info_yaml = self.ir["WeekendInfo"]
+        w_info_yaml = self.ir["WeekendInfo"]
+        session_info_yaml = self.ir["SessionInfo"]
+        print(session_info_yaml)
+        print(w_info_yaml)
         if session_info_yaml:
             try:
                 parsed_yaml = yaml.safe_load(session_info_yaml)
