@@ -11,7 +11,7 @@ class Session(object):
         self._session_info = None
 
         if not self.ir.is_connected:
-            raise ConnectionError("Not connected to IRacing")
+            print("IrSDK is not connected")
 
     def refresh(self):
         self._update_session_info()
