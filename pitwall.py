@@ -10,6 +10,7 @@ from vars import telemetry_vars
 from influxdb_client_3 import InfluxDBClient3, Point, WritePrecision
 from influxdb_client_3 import WriteOptions, write_client_options, InfluxDBError
 
+from session import Session
 
 INFLUXDB_HOST = "http://192.168.0.7:8181" # some local ip
 INFLUXDB_DATABASE = "iracing-telemetry"
@@ -68,7 +69,6 @@ class State:
     ir_connected = False
     last_car_setup_tick = -1
 
-
 def check_iracing():
     if state.ir_connected and not (ir.is_initialized and ir.is_connected):
         state.ir_connected = False
@@ -119,6 +119,7 @@ def generate_telemetry_point(driver_name, telemetry_item) -> Point:
 if __name__ == '__main__':
     # initializing ir and state
     ir = irsdk.IRSDK()
+    session = Session(ir)
     state = State()
 
     # Initialize the InfluxDB 3 Client using the 'with' statement
@@ -139,6 +140,7 @@ if __name__ == '__main__':
                 check_iracing()
                 # if we are, then process data
                 if state.ir_connected:
+                    session.refresh()
                     telemetry_data = get_telemetry_data()
                     point = generate_telemetry_point("Martijn", telemetry_data)
                     try:
@@ -148,6 +150,5 @@ if __name__ == '__main__':
                 time.sleep(1)
         except KeyboardInterrupt:
             client.close()
-            client.disconnect()
             sys.exit(0)
             # press ctrl+c to exit
